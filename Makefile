@@ -2,7 +2,7 @@ SHELL = bash
 .DEFAULT_GOAL := all
 
 .PHONY: all
-all: style lint phpstan
+all: style lint analyze tests
 
 # ### #
 
@@ -20,9 +20,14 @@ lint:
 	php -l src/http-request.php
 	@echo
 
-.PHONY: phpstan
-phpstan:
+.PHONY: analyze
+analyze:
 	@echo
-	@echo "--> PHPStan"
-	@echo
+	@echo "--> Analyze: PHPStan"
 	vendor/bin/phpstan
+
+.PHONY: tests
+tests:
+	@echo
+	@echo "--> Tests: Pest"
+	vendor/bin/pest
