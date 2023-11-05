@@ -1,0 +1,23 @@
+{
+	"name": "amulet/http-request",
+	"description": "A PHP class for making HTTP requests",
+	"license": "MIT",
+	"require": {
+		"php": ">=8.1.0"
+	},
+	"require-dev": {
+		"phpstan/phpstan": "^1.10",
+		"pestphp/pest": "^2.24"
+	},
+	"autoload": {
+		"classmap": [
+			"src/http-request.php"
+		]
+	},
+	"config": {
+		"classmap-authoritative": true,
+		"allow-plugins": {
+			"pestphp/pest-plugin": false
+		}
+	}
+}
