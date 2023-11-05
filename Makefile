@@ -9,20 +9,20 @@ all: style lint phpstan
 .PHONY: style
 style:
 	@echo
-	@echo "--> style: php-cs-fixer"
+	@echo "--> Style: php-cs-fixer"
 	vendor/bin/php-cs-fixer fix -v
 	@echo
 
 .PHONY: lint
 lint:
 	@echo
-	@echo "--> lint"
+	@echo "--> Lint"
 	php -l src/http-request.php
 	@echo
 
 .PHONY: phpstan
 phpstan:
 	@echo
-	@echo "--> phpstan"
+	@echo "--> PHPStan"
 	@echo
 	vendor/bin/phpstan
