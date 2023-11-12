@@ -39,7 +39,7 @@ $rules = [
 		'single_line' => true,
 	],
 	'concat_space' => [
-		'spacing' => 'none',
+		'spacing' => 'one',
 	],
 	'constant_case' => ['case' => 'lower'],
 	'declare_equal_normalize' => [
