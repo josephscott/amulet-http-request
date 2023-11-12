@@ -8,3 +8,6 @@ phpstan.neon
 # Vendor Files
 vendor/*
 composer.lock
+
+# Test let overs
+tests/server/pid.txt
