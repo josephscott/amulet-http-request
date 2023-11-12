@@ -6,20 +6,11 @@ namespace Amulet;
 class HTTP_Request {
 	public function __construct() {}
 
-	/**
-	 * @param array<string> $headers
-	 * @return array<mixed>
-	 */
-	public function get( string $url, array $headers ) : array {
+	public function get( string $url, array $headers = [] ) : array {
 		$out = $this->request( 'GET', $url, $headers );
 		return $out;
 	}
 
-	/**
-	 * @param array<string> $headers
-	 * @param array<mixed> $data
-	 * @return array<mixed>
-	 */
 	public function request(
 		string $method,
 		string $url,
