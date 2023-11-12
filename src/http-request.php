@@ -7,10 +7,11 @@ class HTTP_Request {
 	public function __construct() {}
 
 	/**
+	 * @param array<string> $headers
 	 * @return array<mixed>
 	 */
-	public function get( string $url ) : array {
-		$out = $this->request( 'GET', $url );
+	public function get( string $url, array $headers ) : array {
+		$out = $this->request( 'GET', $url, $headers );
 		return $out;
 	}
 
@@ -43,6 +44,7 @@ class HTTP_Request {
 			CURLOPT_RETURNTRANSFER => true,
 			CURLOPT_FOLLOWLOCATION => false,
 			CURLOPT_PROTOCOLS => CURLPROTO_HTTP | CURLPROTO_HTTPS,
+			CURLOPT_HTTPHEADER => $headers,
 		] );
 		$response = curl_exec( $curl );
 		if ( $response === false ) {
