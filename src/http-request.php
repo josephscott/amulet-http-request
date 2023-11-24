@@ -72,7 +72,25 @@ class HTTP_Request {
 			$out['body'] = $response;
 		}
 
+		$info = curl_getinfo( $curl );
 		curl_close( $curl );
+
+		// PHPStan does not know about the microsecond fields
+		$out['timing']['dns'] = $info['namelookup_time_us'] / 1000; // @phpstan-ignore-line
+		$out['timing']['tcp'] = ( $info['connect_time_us'] - $info['namelookup_time_us'] ) / 1000; // @phpstan-ignore-line
+
+		$out['timing']['tls'] = 0;
+		if ( $info['appconnect_time_us'] > 0 ) { // @phpstan-ignore-line
+			$out['timing']['tls'] = ( $info['appconnect_time_us'] - $info['connect_time_us'] ) / 1000; // @phpstan-ignore-line
+		}
+
+		$out['timing']['redirect'] = 0;
+		if ( $info['redirect_time_us'] > 0 ) { // @phpstan-ignore-line
+			$out['timing']['redirect'] = ( $info['redirect_time_us'] - $info['appconnect_time_us'] ) / 1000; // @phpstan-ignore-line
+		}
+
+		$out['timing']['http'] = ( $info['starttransfer_time_us'] - $info['appconnect_time_us'] ) / 1000; // @phpstan-ignore-line
+		$out['timing']['total'] = $info['total_time_us'] / 1000; // @phpstan-ignore-line
 
 		return $out;
 	}
