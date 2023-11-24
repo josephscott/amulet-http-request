@@ -4,6 +4,8 @@ declare( strict_types = 1 );
 namespace Amulet;
 
 class HTTP_Request {
+	public int $timeout = 10;
+
 	public function __construct() {}
 
 	public function get( string $url, array $headers = [] ) : array {
@@ -36,6 +38,7 @@ class HTTP_Request {
 			CURLOPT_CUSTOMREQUEST => $method,
 			CURLOPT_RETURNTRANSFER => true,
 			CURLOPT_FOLLOWLOCATION => false,
+			CURLOPT_TIMEOUT => $this->timeout,
 			CURLOPT_PROTOCOLS => CURLPROTO_HTTP | CURLPROTO_HTTPS,
 			CURLOPT_HTTPHEADER => $headers,
 			CURLOPT_HEADERFUNCTION => function ( $curl, $header ) use ( &$out ) {
