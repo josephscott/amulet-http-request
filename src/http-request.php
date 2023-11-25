@@ -13,6 +13,11 @@ class HTTP_Request {
 		return $out;
 	}
 
+	public function head( string $url, array $headers = [] ) : array {
+		$out = $this->request( 'HEAD', $url, $headers );
+		return $out;
+	}
+
 	public function request(
 		string $method,
 		string $url,
@@ -67,6 +72,10 @@ class HTTP_Request {
 				return $length;
 			},
 		] );
+
+		if ( $method === 'HEAD' ) {
+			curl_setopt( $curl, CURLOPT_NOBODY, true );
+		}
 
 		$response = curl_exec( $curl );
 		if ( $response === false ) {
