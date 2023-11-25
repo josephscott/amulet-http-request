@@ -23,6 +23,33 @@ class HTTP_Request {
 		return $out;
 	}
 
+	public function patch(
+		string $url,
+		array $headers = [],
+		array $data = [],
+	) : array {
+		$out = $this->request( 'PATCH', $url, $headers, $data );
+		return $out;
+	}
+
+	public function post(
+		string $url,
+		array $headers = [],
+		array $data = [],
+	) : array {
+		$out = $this->request( 'POST', $url, $headers, $data );
+		return $out;
+	}
+
+	public function put(
+		string $url,
+		array $headers = [],
+		array $data = [],
+	) : array {
+		$out = $this->request( 'PUT', $url, $headers, $data );
+		return $out;
+	}
+
 	public function request(
 		string $method,
 		string $url,
@@ -145,24 +172,6 @@ class HTTP_Request {
 		}
 
 		curl_close( $curl );
-		return $out;
-	}
-
-	public function post(
-		string $url,
-		array $headers = [],
-		array $data = [],
-	) : array {
-		$out = $this->request( 'POST', $url, $headers, $data );
-		return $out;
-	}
-
-	public function put(
-		string $url,
-		array $headers = [],
-		array $data = [],
-	) : array {
-		$out = $this->request( 'PUT', $url, $headers, $data );
 		return $out;
 	}
 }
