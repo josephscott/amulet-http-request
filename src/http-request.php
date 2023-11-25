@@ -23,6 +23,11 @@ class HTTP_Request {
 		return $out;
 	}
 
+	public function options( string $url, array $headers = [] ) : array {
+		$out = $this->request( 'OPTIONS', $url, $headers );
+		return $out;
+	}
+
 	public function patch(
 		string $url,
 		array $headers = [],
