@@ -6,6 +6,8 @@ namespace Amulet;
 class HTTP_Request {
 	public int $timeout = 10;
 
+	public string $encoding = 'gzip';
+
 	public function __construct() {}
 
 	public function delete( string $url, array $headers = [] ) : array {
@@ -121,6 +123,10 @@ class HTTP_Request {
 
 		if ( $method === 'PUT' ) {
 			curl_setopt( $curl, CURLOPT_POSTFIELDS, $data );
+		}
+
+		if ( ! empty( $this->encoding ) ) {
+			curl_setopt( $curl, CURLOPT_ENCODING, $this->encoding );
 		}
 
 		$response = curl_exec( $curl );
