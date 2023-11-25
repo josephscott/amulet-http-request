@@ -75,26 +75,53 @@ class HTTP_Request {
 			$out['body'] = $response;
 		}
 
-		$info = curl_getinfo( $curl );
-		curl_close( $curl );
+		$info = [
+			'dns' => curl_getinfo( $curl, CURLINFO_NAMELOOKUP_TIME_T ),
+			'tcp' => curl_getinfo( $curl, CURLINFO_CONNECT_TIME_T ),
+			'tls' => curl_getinfo( $curl, CURLINFO_APPCONNECT_TIME_T ),
+			'redirect' => curl_getinfo( $curl, CURLINFO_REDIRECT_TIME_T ),
+			'http' => curl_getinfo( $curl, CURLINFO_STARTTRANSFER_TIME_T ),
+			'total' => curl_getinfo( $curl, CURLINFO_TOTAL_TIME_T ),
+		];
 
-		// PHPStan does not know about the microsecond fields
-		$out['timing']['dns'] = $info['namelookup_time_us'] / 1000; // @phpstan-ignore-line
-		$out['timing']['tcp'] = ( $info['connect_time_us'] - $info['namelookup_time_us'] ) / 1000; // @phpstan-ignore-line
+		$out['timing']['dns'] = $info['dns'];
+
+		$out['timing']['tcp'] = $info['tcp'];
+		$out['timing']['tcp'] -= $out['timing']['dns'];
 
 		$out['timing']['tls'] = 0;
-		if ( $info['appconnect_time_us'] > 0 ) { // @phpstan-ignore-line
-			$out['timing']['tls'] = ( $info['appconnect_time_us'] - $info['connect_time_us'] ) / 1000; // @phpstan-ignore-line
+		if ( $info['tls'] > 0 ) {
+			$out['timing']['tls'] = $info['tls'] - $out['timing']['tcp'];
 		}
 
 		$out['timing']['redirect'] = 0;
-		if ( $info['redirect_time_us'] > 0 ) { // @phpstan-ignore-line
-			$out['timing']['redirect'] = ( $info['redirect_time_us'] - $info['appconnect_time_us'] ) / 1000; // @phpstan-ignore-line
+		if ( $info['redirect'] > 0 ) {
+			if ( $out['timing']['tls'] > 0 ) {
+				$out['timing']['redirect'] = $info['redirect'] - $out['timing']['tls'];
+			} else {
+				$out['timing']['redirect'] = $info['redirect'] - $out['timing']['tcp'];
+			}
 		}
 
-		$out['timing']['http'] = ( $info['starttransfer_time_us'] - $info['appconnect_time_us'] ) / 1000; // @phpstan-ignore-line
-		$out['timing']['total'] = $info['total_time_us'] / 1000; // @phpstan-ignore-line
+		$http = $info['http'];
+		if ( $out['timing']['redirect'] > 0 ) {
+			$out['timing']['http'] = $info['http'] - $out['timing']['redirect'];
+		} elseif ( $out['timing']['tls'] > 0 ) {
+			$out['timing']['http'] = $info['http'] - $out['timing']['tls'];
+		} else {
+			$out['timing']['http'] = $info['http'] - $out['timing']['tcp'];
+		}
 
+		$out['timing']['total'] = $info['total'];
+
+		// Move from microseconds to milliseconds
+		foreach ( $out['timing'] as $k => $v ) {
+			if ( $v > 0 ) {
+				$out['timing'][$k] = $v / 1000;
+			}
+		}
+
+		curl_close( $curl );
 		return $out;
 	}
 }
