@@ -8,6 +8,11 @@ class HTTP_Request {
 
 	public function __construct() {}
 
+	public function delete( string $url, array $headers = [] ) : array {
+		$out = $this->request( 'DELETE', $url, $headers );
+		return $out;
+	}
+
 	public function get( string $url, array $headers = [] ) : array {
 		$out = $this->request( 'GET', $url, $headers );
 		return $out;
