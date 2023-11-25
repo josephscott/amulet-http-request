@@ -18,6 +18,15 @@ class HTTP_Request {
 		return $out;
 	}
 
+	public function post(
+		string $url,
+		array $headers = [],
+		array $data = [],
+	) : array {
+		$out = $this->request( 'POST', $url, $headers, $data );
+		return $out;
+	}
+
 	public function request(
 		string $method,
 		string $url,
@@ -75,6 +84,11 @@ class HTTP_Request {
 
 		if ( $method === 'HEAD' ) {
 			curl_setopt( $curl, CURLOPT_NOBODY, true );
+		}
+
+		if ( $method === 'POST' ) {
+			curl_setopt( $curl, CURLOPT_POST, true );
+			curl_setopt( $curl, CURLOPT_POSTFIELDS, $data );
 		}
 
 		$response = curl_exec( $curl );
