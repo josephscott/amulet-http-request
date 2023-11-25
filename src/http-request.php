@@ -27,6 +27,15 @@ class HTTP_Request {
 		return $out;
 	}
 
+	public function put(
+		string $url,
+		array $headers = [],
+		array $data = [],
+	) : array {
+		$out = $this->request( 'PUT', $url, $headers, $data );
+		return $out;
+	}
+
 	public function request(
 		string $method,
 		string $url,
@@ -88,6 +97,10 @@ class HTTP_Request {
 
 		if ( $method === 'POST' ) {
 			curl_setopt( $curl, CURLOPT_POST, true );
+			curl_setopt( $curl, CURLOPT_POSTFIELDS, $data );
+		}
+
+		if ( $method === 'PUT' ) {
 			curl_setopt( $curl, CURLOPT_POSTFIELDS, $data );
 		}
 
