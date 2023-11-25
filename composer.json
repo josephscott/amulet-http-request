@@ -3,9 +3,11 @@
 	"description": "A PHP class for making HTTP requests",
 	"license": "MIT",
 	"require": {
-		"php": ">=8.1.0"
+		"php": ">=8.1.0",
+		"ext-curl": "*"
 	},
 	"require-dev": {
+		"ext-json": "*",
 		"phpstan/phpstan": "^1.10",
 		"pestphp/pest": "^2.24",
 		"friendsofphp/php-cs-fixer": "^3.37"
