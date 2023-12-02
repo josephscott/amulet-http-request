@@ -5,8 +5,8 @@ namespace Amulet\HTTP;
 
 class Request {
 	public int $timeout = 10;
-
 	public string $encoding = 'gzip';
+	public string $using = 'curl';
 
 	public function __construct() {}
 
@@ -58,6 +58,25 @@ class Request {
 	}
 
 	public function request(
+		string $method,
+		string $url,
+		array $headers = [],
+		array $data = []
+	) : array {
+		$out = [];
+		if ( $this->using === 'curl' ) {
+			$out = $this->request_curl(
+				$method,
+				$url,
+				$headers,
+				$data
+			);
+		}
+
+		return $out;
+	}
+
+	public function request_curl(
 		string $method,
 		string $url,
 		array $headers = [],
