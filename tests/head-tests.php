@@ -2,7 +2,7 @@
 declare( strict_types = 1 );
 
 test( 'head', function () {
-	$http = new \Amulet\HTTP_Request();
+	$http = new \Amulet\HTTP\Request();
 	$response = $http->get( url: 'http://127.0.0.1:7878/' );
 
 	expect( $response['error'] )->toBe( false );

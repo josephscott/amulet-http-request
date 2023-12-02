@@ -2,7 +2,7 @@
 declare( strict_types = 1 );
 
 test( 'options', function () {
-	$http = new \Amulet\HTTP_Request();
+	$http = new \Amulet\HTTP\Request();
 	$response = $http->options( url: 'http://127.0.0.1:7878/?method=options' );
 
 	$data = json_decode( $response['body'], associative: true );

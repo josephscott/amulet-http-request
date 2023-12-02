@@ -2,7 +2,7 @@
 declare( strict_types = 1 );
 
 test( 'patch: data', function () {
-	$http = new \Amulet\HTTP_Request();
+	$http = new \Amulet\HTTP\Request();
 	$response = $http->patch(
 		url: 'http://127.0.0.1:7878/?method=patch',
 		data: [

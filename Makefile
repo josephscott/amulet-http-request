@@ -17,7 +17,7 @@ style:
 lint:
 	@echo
 	@echo "--> Lint"
-	php -l src/http-request.php
+	php -l src/amulet/http/request.php
 	@echo
 
 .PHONY: analyze

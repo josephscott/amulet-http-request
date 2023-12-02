@@ -1,9 +1,9 @@
 <?php
 declare( strict_types = 1 );
 
-namespace Amulet;
+namespace Amulet\HTTP;
 
-class HTTP_Request {
+class Request {
 	public int $timeout = 10;
 
 	public string $encoding = 'gzip';
