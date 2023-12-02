@@ -79,13 +79,13 @@ class HTTP_Request {
 		}
 
 		curl_setopt_array( $curl, [
-			CURLOPT_CUSTOMREQUEST => $method,
-			CURLOPT_RETURNTRANSFER => true,
-			CURLOPT_FOLLOWLOCATION => false,
-			CURLOPT_TIMEOUT => $this->timeout,
-			CURLOPT_PROTOCOLS => CURLPROTO_HTTP | CURLPROTO_HTTPS,
-			CURLOPT_HTTPHEADER => $headers,
-			CURLOPT_HEADERFUNCTION => function ( $curl, $header ) use ( &$out ) {
+			\CURLOPT_CUSTOMREQUEST => $method,
+			\CURLOPT_RETURNTRANSFER => true,
+			\CURLOPT_FOLLOWLOCATION => false,
+			\CURLOPT_TIMEOUT => $this->timeout,
+			\CURLOPT_PROTOCOLS => \CURLPROTO_HTTP | \CURLPROTO_HTTPS,
+			\CURLOPT_HTTPHEADER => $headers,
+			\CURLOPT_HEADERFUNCTION => function ( $curl, $header ) use ( &$out ) {
 				$length = strlen( $header );
 				$parts = explode( ':', $header, 2 );
 
@@ -113,20 +113,20 @@ class HTTP_Request {
 		] );
 
 		if ( $method === 'HEAD' ) {
-			curl_setopt( $curl, CURLOPT_NOBODY, true );
+			curl_setopt( $curl, \CURLOPT_NOBODY, true );
 		}
 
 		if ( $method === 'POST' ) {
-			curl_setopt( $curl, CURLOPT_POST, true );
-			curl_setopt( $curl, CURLOPT_POSTFIELDS, $data );
+			curl_setopt( $curl, \CURLOPT_POST, true );
+			curl_setopt( $curl, \CURLOPT_POSTFIELDS, $data );
 		}
 
 		if ( $method === 'PUT' ) {
-			curl_setopt( $curl, CURLOPT_POSTFIELDS, $data );
+			curl_setopt( $curl, \CURLOPT_POSTFIELDS, $data );
 		}
 
 		if ( ! empty( $this->encoding ) ) {
-			curl_setopt( $curl, CURLOPT_ENCODING, $this->encoding );
+			curl_setopt( $curl, \CURLOPT_ENCODING, $this->encoding );
 		}
 
 		$response = curl_exec( $curl );
@@ -137,12 +137,12 @@ class HTTP_Request {
 		}
 
 		$info = [
-			'dns' => curl_getinfo( $curl, CURLINFO_NAMELOOKUP_TIME_T ),
-			'tcp' => curl_getinfo( $curl, CURLINFO_CONNECT_TIME_T ),
-			'tls' => curl_getinfo( $curl, CURLINFO_APPCONNECT_TIME_T ),
-			'redirect' => curl_getinfo( $curl, CURLINFO_REDIRECT_TIME_T ),
-			'http' => curl_getinfo( $curl, CURLINFO_STARTTRANSFER_TIME_T ),
-			'total' => curl_getinfo( $curl, CURLINFO_TOTAL_TIME_T ),
+			'dns' => curl_getinfo( $curl, \CURLINFO_NAMELOOKUP_TIME_T ),
+			'tcp' => curl_getinfo( $curl, \CURLINFO_CONNECT_TIME_T ),
+			'tls' => curl_getinfo( $curl, \CURLINFO_APPCONNECT_TIME_T ),
+			'redirect' => curl_getinfo( $curl, \CURLINFO_REDIRECT_TIME_T ),
+			'http' => curl_getinfo( $curl, \CURLINFO_STARTTRANSFER_TIME_T ),
+			'total' => curl_getinfo( $curl, \CURLINFO_TOTAL_TIME_T ),
 		];
 
 		$out['timing']['dns'] = $info['dns'];
