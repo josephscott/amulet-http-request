@@ -29,7 +29,7 @@ $rules = [
 		'elements' => [
 			'const' => 'one',
 			'method' => 'one',
-			'property' => 'one',
+			'property' => 'only_if_meta',
 			'trait_import' => 'none',
 		],
 	],
