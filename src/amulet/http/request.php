@@ -4,7 +4,7 @@ declare( strict_types = 1 );
 namespace Amulet\HTTP;
 
 class Request {
-	public int $timeout = 10;
+	public int $timeout = 30;
 	public string $encoding = 'gzip';
 	public string $using = 'curl';
 
