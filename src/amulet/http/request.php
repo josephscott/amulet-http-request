@@ -204,4 +204,13 @@ class Request {
 		curl_close( $curl );
 		return $out;
 	}
+
+	public function request_php(
+		string $method,
+		string $url,
+		array $headers = [],
+		array $data = []
+	) : array {
+
+	}
 }
