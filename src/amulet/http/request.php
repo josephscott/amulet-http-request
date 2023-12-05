@@ -7,6 +7,11 @@ class Request {
 	public int $timeout = 30;
 	public string $encoding = 'gzip';
 	public string $using = 'curl';
+	public array $default_headers = [
+		'Connection' => 'close',
+		'Accept' => '*/*',
+		'User-Agent' => 'amulet-http-request'
+	];
 
 	public function __construct() {}
 
@@ -147,6 +152,13 @@ class Request {
 		if ( ! empty( $this->encoding ) ) {
 			curl_setopt( $curl, \CURLOPT_ENCODING, $this->encoding );
 		}
+
+		$headers = array_merge( $this->default_headers, $headers );
+		$curl_headers = [];
+		foreach ( $headers as $k => $v ) {
+			$curl_headers[] = "$k: $v";
+		}
+		curl_setopt( $curl, CURLOPT_HTTPHEADER, $curl_headers );
 
 		$response = curl_exec( $curl );
 		if ( $response === false ) {
