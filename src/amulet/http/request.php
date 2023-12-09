@@ -10,7 +10,7 @@ class Request {
 	public array $default_headers = [
 		'Connection' => 'close',
 		'Accept' => '*/*',
-		'User-Agent' => 'amulet-http-request'
+		'User-Agent' => 'amulet-http-request',
 	];
 
 	public function __construct() {}
@@ -223,6 +223,15 @@ class Request {
 		array $headers = [],
 		array $data = []
 	) : array {
+		$out = [
+			'error' => false,
+			'response_code' => 0,
+			'http_version' => 0,
+			'headers' => [],
+			'body' => '',
+			'timing' => [],
+		];
 
+		return $out;
 	}
 }
