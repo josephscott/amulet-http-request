@@ -155,7 +155,7 @@ $rules = [
 	'switch_case_space' => true,
 	'ternary_operator_spaces' => true,
 	'trailing_comma_in_multiline' => ['elements' => ['arrays']],
-	'trim_array_spaces' => true,
+	'trim_array_spaces' => false,
 	'unary_operator_spaces' => true,
 	'visibility_required' => [
 		'elements' => ['method', 'property'],
