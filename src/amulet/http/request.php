@@ -4,9 +4,11 @@ declare( strict_types = 1 );
 namespace Amulet\HTTP;
 
 class Request {
-	public int $timeout = 30;
-	public string $encoding = 'gzip';
-	public string $using = 'curl';
+	public array $default_options = [
+		'using' => 'curl',
+		'timeout' => 30,
+		'encoding' => 'gzip',
+	];
 	public array $default_headers = [
 		'Connection' => 'close',
 		'Accept' => '*/*',
@@ -15,23 +17,59 @@ class Request {
 
 	public function __construct() {}
 
-	public function delete( string $url, array $headers = [] ) : array {
-		$out = $this->request( 'DELETE', $url, $headers );
+	public function delete(
+		string $url,
+		array $headers = [],
+		array $options = []
+	) : array {
+		$out = $this->request(
+			method: 'DELETE',
+			url: $url,
+			headers: $headers,
+			options: $options
+		);
 		return $out;
 	}
 
-	public function get( string $url, array $headers = [] ) : array {
-		$out = $this->request( 'GET', $url, $headers );
+	public function get(
+		string $url,
+		array $headers = [],
+		array $options = []
+	) : array {
+		$out = $this->request(
+			method: 'GET',
+			url: $url,
+			headers: $headers,
+			options: $options
+		);
 		return $out;
 	}
 
-	public function head( string $url, array $headers = [] ) : array {
-		$out = $this->request( 'HEAD', $url, $headers );
+	public function head(
+		string $url,
+		array $headers = [],
+		array $options = []
+	) : array {
+		$out = $this->request(
+			method: 'HEAD',
+			url: $url,
+			headers: $headers,
+			options: $options
+		);
 		return $out;
 	}
 
-	public function options( string $url, array $headers = [] ) : array {
-		$out = $this->request( 'OPTIONS', $url, $headers );
+	public function options(
+		string $url,
+		array $headers = [],
+		array $options = []
+	) : array {
+		$out = $this->request(
+			method: 'OPTIONS',
+			url: $url,
+			headers: $headers,
+			options: $options
+		);
 		return $out;
 	}
 
@@ -39,8 +77,15 @@ class Request {
 		string $url,
 		array $headers = [],
 		array $data = [],
+		array $options = []
 	) : array {
-		$out = $this->request( 'PATCH', $url, $headers, $data );
+		$out = $this->request(
+			method: 'PATCH',
+			url: $url,
+			headers: $headers,
+			data: $data,
+			options: $options
+		);
 		return $out;
 	}
 
@@ -48,8 +93,15 @@ class Request {
 		string $url,
 		array $headers = [],
 		array $data = [],
+		array $options = []
 	) : array {
-		$out = $this->request( 'POST', $url, $headers, $data );
+		$out = $this->request(
+			method: 'POST',
+			url: $url,
+			headers: $headers,
+			data: $data,
+			options: $options
+		);
 		return $out;
 	}
 
@@ -57,8 +109,15 @@ class Request {
 		string $url,
 		array $headers = [],
 		array $data = [],
+		array $options = []
 	) : array {
-		$out = $this->request( 'PUT', $url, $headers, $data );
+		$out = $this->request(
+			method: 'PUT',
+			url: $url,
+			headers: $headers,
+			data: $data,
+			options: $options
+		);
 		return $out;
 	}
 
@@ -66,15 +125,20 @@ class Request {
 		string $method,
 		string $url,
 		array $headers = [],
-		array $data = []
+		array $data = [],
+		array $options = []
 	) : array {
 		$out = [];
-		if ( $this->using === 'curl' ) {
+
+		$merged_options = array_merge( $this->default_options, $options );
+
+		if ( $merged_options['using'] === 'curl' ) {
 			$out = $this->request_curl(
-				$method,
-				$url,
-				$headers,
-				$data
+				method: $method,
+				url: $url,
+				headers: $headers,
+				data: $data,
+				options: $merged_options
 			);
 		}
 
@@ -85,7 +149,8 @@ class Request {
 		string $method,
 		string $url,
 		array $headers = [],
-		array $data = []
+		array $data = [],
+		array $options = []
 	) : array {
 		$out = [
 			'error' => false,
@@ -106,7 +171,7 @@ class Request {
 			\CURLOPT_CUSTOMREQUEST => $method,
 			\CURLOPT_RETURNTRANSFER => true,
 			\CURLOPT_FOLLOWLOCATION => false,
-			\CURLOPT_TIMEOUT => $this->timeout,
+			\CURLOPT_TIMEOUT => $options['timeout'],
 			\CURLOPT_PROTOCOLS => \CURLPROTO_HTTP | \CURLPROTO_HTTPS,
 			\CURLOPT_HTTPHEADER => $headers,
 			\CURLOPT_HEADERFUNCTION => function ( $curl, $header ) use ( &$out ) {
@@ -149,8 +214,8 @@ class Request {
 			curl_setopt( $curl, \CURLOPT_POSTFIELDS, $data );
 		}
 
-		if ( ! empty( $this->encoding ) ) {
-			curl_setopt( $curl, \CURLOPT_ENCODING, $this->encoding );
+		if ( ! empty( $options['encoding'] ) ) {
+			curl_setopt( $curl, \CURLOPT_ENCODING, $options['encoding'] );
 		}
 
 		$headers = array_merge( $this->default_headers, $headers );
