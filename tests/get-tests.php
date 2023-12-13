@@ -52,3 +52,15 @@ test( 'get: response timing', function () {
 	expect( $response['timing']['http'] )->toBeGreaterThan( 0 );
 	expect( $response['timing']['total'] )->toBeGreaterThan( 0 );
 } );
+
+test( 'get: only php', function () {
+	$http = new \Amulet\HTTP\Request();
+	$response = $http->get(
+		url: 'http://127.0.0.1:7878/?hello=world',
+		options: [ 'using' => 'php' ]
+	);
+
+	expect( $response['error'] )->toBe( false );
+	expect( $response['response_code'] )->toBe( 200 );
+	expect( $response['headers']['content-type'] )->toBe( 'application/json' );
+} );

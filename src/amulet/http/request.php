@@ -140,6 +140,14 @@ class Request {
 				data: $data,
 				options: $merged_options
 			);
+		} elseif ( $merged_options['using'] === 'php' ) {
+			$out = $this->request_php(
+				method: $method,
+				url: $url,
+				headers: $headers,
+				data: $data,
+				options: $merged_options
+			);
 		}
 
 		return $out;
@@ -286,7 +294,8 @@ class Request {
 		string $method,
 		string $url,
 		array $headers = [],
-		array $data = []
+		array $data = [],
+		array $options = []
 	) : array {
 		$out = [
 			'error' => false,
@@ -297,6 +306,98 @@ class Request {
 			'timing' => [],
 		];
 
+		$context = $this->php_build_context(
+			method: $method,
+			headers: $headers,
+			data: $data,
+			options: $options
+		);
+
+		// XXX: HACK
+		// Make Pest happy by suppressing the warnings that can happen
+		// I'd like to find a way to deal with warnings without using @
+		$start = microtime( true );
+		$body = @file_get_contents(
+			filename: $url,
+			use_include_path: false,
+			context: $context
+		);
+		$out['total_time'] = number_format(
+			( microtime( true ) - $start ),
+			6
+		);
+		if ( $body === false ) {
+			$out['error'] = true;
+			return $out;
+		}
+
+		$out['body'] = $body;
+		$out['headers'] = self::php_parse_headers(
+			headers: $http_response_header
+		);
+
+		$out['response_code'] = $out['headers']['response_code'];
+		unset( $out['headers']['response_code'] );
+
+		if (
+			$out['response_code'] < 200
+			|| $out['response_code'] > 299
+		) {
+			$out['error'] = true;
+			return $out;
+		}
+
 		return $out;
+	}
+
+	private function php_build_context(
+		string $method,
+		array $headers = [],
+		array $data = [],
+		array $options = []
+	) {
+		$php_options = [];
+		$php_options['http'] = [];
+		$php_options['http']['method'] = $method;
+
+		$headers = array_merge( $this->default_headers, $headers );
+
+		if ( ! empty( $data ) ) {
+			$php_options['http']['content'] = http_build_query( $data );
+		}
+
+		foreach ( $headers as $header_name => $header_value ) {
+			if ( ! isset( $php_options['http']['header'] ) ) {
+				$php_options['http']['header'] = '';
+			}
+
+			$php_options['http']['header'] .= "$header_name: $header_value\r\n";
+		}
+
+		$context = stream_context_create( $php_options );
+		return $context;
+	}
+
+	private function php_parse_headers( array $headers ):array {
+		$parsed = [];
+
+		$response_code = array_shift( $headers );
+		if ( preg_match( '#HTTP/[0-9\.]+\s+([0-9]+)#', $response_code, $matches ) ) {
+			$headers[] = 'response_code: ' . intval( $matches[1] );
+		}
+
+		foreach ( $headers as $header ) {
+			$parts = explode( ':', $header, 2 );
+			if ( count( $parts ) === 2 ) {
+				$parts[1] = trim( $parts[1] );
+				if ( is_numeric( $parts[1] ) ) {
+					$parts[1] = (int) $parts[1];
+				}
+
+				$parsed[strtolower( trim( $parts[0] ) )] = $parts[1];
+			}
+		}
+
+		return $parsed;
 	}
 }
