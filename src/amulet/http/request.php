@@ -215,11 +215,13 @@ class Request {
 
 		if ( $method === 'POST' ) {
 			curl_setopt( $curl, \CURLOPT_POST, true );
-			curl_setopt( $curl, \CURLOPT_POSTFIELDS, $data );
+			curl_setopt( $curl, \CURLOPT_POSTFIELDS, http_build_query( $data ) );
+			$headers['Content-Type'] = 'application/x-www-form-urlencoded';
 		}
 
 		if ( $method === 'PUT' ) {
-			curl_setopt( $curl, \CURLOPT_POSTFIELDS, $data );
+			curl_setopt( $curl, \CURLOPT_POSTFIELDS, http_build_query( $data ) );
+			$headers['Content-Type'] = 'application/x-www-form-urlencoded';
 		}
 
 		if ( ! empty( $options['encoding'] ) ) {
@@ -364,6 +366,7 @@ class Request {
 
 		if ( ! empty( $data ) ) {
 			$php_options['http']['content'] = http_build_query( $data );
+			$headers['Content-Type'] = 'application/x-www-form-urlencoded';
 		}
 
 		foreach ( $headers as $header_name => $header_value ) {
