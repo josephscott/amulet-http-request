@@ -1,8 +1,7 @@
 <?php
 declare( strict_types = 1 );
 
-test( 'post: data', function () {
-	// curl
+test( 'post-curl: data', function () {
 	$http = new \Amulet\HTTP\Request();
 	$response = $http->put(
 		url: 'http://127.0.0.1:7878/?method=put',
@@ -17,8 +16,9 @@ test( 'post: data', function () {
 	expect( $response['error'] )->toBe( false );
 	expect( $response['response_code'] )->toBe( 200 );
 	expect( $response['headers']['content-type'] )->toBe( 'application/json' );
+} );
 
-	// php
+test( 'post-php: data', function () {
 	$http = new \Amulet\HTTP\Request();
 	$http->default_options['using'] = 'php';
 	$response = $http->put(
