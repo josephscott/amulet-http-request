@@ -361,6 +361,7 @@ class Request {
 		$php_options = [];
 		$php_options['http'] = [];
 		$php_options['http']['method'] = $method;
+		$php_options['http']['timeout'] = $options['timeout'];
 
 		$headers = array_merge( $this->default_headers, $headers );
 
