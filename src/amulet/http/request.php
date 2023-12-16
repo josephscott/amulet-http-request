@@ -308,6 +308,13 @@ class Request {
 			'timing' => [],
 		];
 
+		if (
+			! empty( $options['encoding'] )
+			&& function_exists( 'gzdecode' )
+		) {
+			$headers['Accept-Encoding'] = 'gzip';
+		}
+
 		$context = $this->php_build_context(
 			method: $method,
 			headers: $headers,
@@ -337,6 +344,13 @@ class Request {
 		$out['headers'] = self::php_parse_headers(
 			headers: $http_response_header
 		);
+
+		if (
+			isset( $out['headers']['content-encoding'] )
+			&& $out['headers']['content-encoding'] === 'gzip'
+		) {
+			$out['body'] = gzdecode( $body );
+		}
 
 		$out['response_code'] = $out['headers']['response_code'];
 		unset( $out['headers']['response_code'] );
