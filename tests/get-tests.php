@@ -84,6 +84,7 @@ test( 'get-curl: response timing', function () {
 	expect( $response['response_code'] )->toBe( 200 );
 	expect( $response['headers']['content-type'] )->toBe( 'application/json' );
 
+	expect( $response['timing']['ttfb'] )->toBeGreaterThan( 0 );
 	expect( $response['timing']['dns'] )->toBeGreaterThan( 0 );
 	expect( $response['timing']['tcp'] )->toBeGreaterThan( 0 );
 	expect( $response['timing']['tls'] )->toBe( 0 );

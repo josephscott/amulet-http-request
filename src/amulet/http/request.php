@@ -248,8 +248,11 @@ class Request {
 			'tls' => curl_getinfo( $curl, \CURLINFO_APPCONNECT_TIME_T ),
 			'redirect' => curl_getinfo( $curl, \CURLINFO_REDIRECT_TIME_T ),
 			'http' => curl_getinfo( $curl, \CURLINFO_STARTTRANSFER_TIME_T ),
+			'ttfb' => curl_getinfo( $curl, \CURLINFO_STARTTRANSFER_TIME_T ),
 			'total' => curl_getinfo( $curl, \CURLINFO_TOTAL_TIME_T ),
 		];
+
+		$out['timing']['ttfb'] = $info['ttfb'];
 
 		$out['timing']['dns'] = $info['dns'];
 
