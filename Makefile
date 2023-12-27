@@ -1,5 +1,6 @@
-SHELL = bash
+SHELL = /bin/bash
 .DEFAULT_GOAL := all
+HERE := $(dir $(realpath $(firstword $(MAKEFILE_LIST))))
 
 ##@ help
 help:  ## Display this help
