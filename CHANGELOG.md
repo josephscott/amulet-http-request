@@ -2,6 +2,7 @@
 
 ## ????
 - Include `ttfb` by itself in the curl timing details
+- Rework curl timing details
 
 ## 0.0.2 : 2023-12-18
 - Default headers: connection, accept, user-agent

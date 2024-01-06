@@ -242,56 +242,40 @@ class Request {
 			$out['body'] = $response;
 		}
 
-		$info = [
-			'dns' => curl_getinfo( $curl, \CURLINFO_NAMELOOKUP_TIME_T ),
-			'tcp' => curl_getinfo( $curl, \CURLINFO_CONNECT_TIME_T ),
-			'tls' => curl_getinfo( $curl, \CURLINFO_APPCONNECT_TIME_T ),
-			'redirect' => curl_getinfo( $curl, \CURLINFO_REDIRECT_TIME_T ),
-			'http' => curl_getinfo( $curl, \CURLINFO_STARTTRANSFER_TIME_T ),
-			'ttfb' => curl_getinfo( $curl, \CURLINFO_STARTTRANSFER_TIME_T ),
-			'total' => curl_getinfo( $curl, \CURLINFO_TOTAL_TIME_T ),
-		];
-
-		$out['timing']['ttfb'] = $info['ttfb'];
-
-		$out['timing']['dns'] = $info['dns'];
-
-		$out['timing']['tcp'] = $info['tcp'];
-		$out['timing']['tcp'] -= $out['timing']['dns'];
-
-		$out['timing']['tls'] = 0;
-		if ( $info['tls'] > 0 ) {
-			$out['timing']['tls'] = $info['tls'] - $out['timing']['tcp'];
-		}
-
-		$out['timing']['redirect'] = 0;
-		if ( $info['redirect'] > 0 ) {
-			if ( $out['timing']['tls'] > 0 ) {
-				$out['timing']['redirect'] = $info['redirect'] - $out['timing']['tls'];
-			} else {
-				$out['timing']['redirect'] = $info['redirect'] - $out['timing']['tcp'];
-			}
-		}
-
-		$http = $info['http'];
-		if ( $out['timing']['redirect'] > 0 ) {
-			$out['timing']['http'] = $info['http'] - $out['timing']['redirect'];
-		} elseif ( $out['timing']['tls'] > 0 ) {
-			$out['timing']['http'] = $info['http'] - $out['timing']['tls'];
-		} else {
-			$out['timing']['http'] = $info['http'] - $out['timing']['tcp'];
-		}
-
-		$out['timing']['total'] = $info['total'];
-
-		// Move from microseconds to milliseconds
-		foreach ( $out['timing'] as $k => $v ) {
-			if ( $v > 0 ) {
-				$out['timing'][$k] = $v / 1000;
-			}
-		}
-
+		$info = curl_getinfo( $curl );
 		curl_close( $curl );
+
+		$time = [];
+
+		// PHPStan does not understand these yet
+		// https://github.com/phpstan/phpstan-src/pull/2844
+
+		// @phpstan-ignore-next-line
+		$time['dns'] = $info['namelookup_time_us'];
+
+		// @phpstan-ignore-next-line
+		$time['tcp'] = $info['connect_time_us'];
+		$time['tcp'] -= $time['dns'];
+
+		// @phpstan-ignore-next-line
+		$time['tls'] = $info['appconnect_time_us'];
+		if ( $time['tls'] > 0 ) {
+			$time['tls'] -= $time['tcp'];
+		}
+
+		// @phpstan-ignore-next-line
+		$time['redirect'] = $info['redirect_time_us'];
+
+		// @phpstan-ignore-next-line
+		$time['ttfb'] = $info['starttransfer_time_us'];
+		// @phpstan-ignore-next-line
+		$time['ttfb'] -= $info['appconnect_time_us'];
+		$time['ttfb'] += $time['redirect'];
+
+		// @phpstan-ignore-next-line
+		$time['done'] = $info['total_time_us'];
+
+		$out['timing'] = $time;
 		return $out;
 	}
 
@@ -334,7 +318,7 @@ class Request {
 			use_include_path: false,
 			context: $context
 		);
-		$out['total_time'] = number_format(
+		$out['done'] = number_format(
 			( microtime( true ) - $start ),
 			6
 		);
