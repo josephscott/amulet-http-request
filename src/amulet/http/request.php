@@ -168,6 +168,7 @@ class Request {
 			'body' => '',
 			'timing' => [],
 		];
+		$time = [];
 
 		$curl = curl_init( $url );
 		if ( $curl === false ) {
@@ -235,7 +236,13 @@ class Request {
 		}
 		curl_setopt( $curl, CURLOPT_HTTPHEADER, $curl_headers );
 
+		$start = microtime( true );
 		$response = curl_exec( $curl );
+		$time['done'] = number_format(
+			( microtime( true ) - $start ),
+			6
+		);
+
 		if ( $response === false ) {
 			$out['error'] = true;
 		} else {
@@ -245,35 +252,11 @@ class Request {
 		$info = curl_getinfo( $curl );
 		curl_close( $curl );
 
-		$time = [];
-
-		// PHPStan does not understand these yet
-		// https://github.com/phpstan/phpstan-src/pull/2844
-
-		// @phpstan-ignore-next-line
-		$time['dns'] = $info['namelookup_time_us'];
-
-		// @phpstan-ignore-next-line
-		$time['tcp'] = $info['connect_time_us'];
-		$time['tcp'] -= $time['dns'];
-
-		// @phpstan-ignore-next-line
-		$time['tls'] = $info['appconnect_time_us'];
-		if ( $time['tls'] > 0 ) {
-			$time['tls'] -= $time['tcp'];
+		foreach ( $info as $k => $v ) {
+			if ( strpos( $k, '_time_us' ) !== false ) {
+				$time['curl_' . $k] = $v;
+			}
 		}
-
-		// @phpstan-ignore-next-line
-		$time['redirect'] = $info['redirect_time_us'];
-
-		// @phpstan-ignore-next-line
-		$time['ttfb'] = $info['starttransfer_time_us'];
-		// @phpstan-ignore-next-line
-		$time['ttfb'] -= $info['appconnect_time_us'];
-		$time['ttfb'] += $time['redirect'];
-
-		// @phpstan-ignore-next-line
-		$time['done'] = $info['total_time_us'];
 
 		$out['timing'] = $time;
 		return $out;

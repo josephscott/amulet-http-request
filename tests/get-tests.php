@@ -84,12 +84,13 @@ test( 'get-curl: response timing', function () {
 	expect( $response['response_code'] )->toBe( 200 );
 	expect( $response['headers']['content-type'] )->toBe( 'application/json' );
 
-	expect( $response['timing']['dns'] )->toBeGreaterThan( 0 );
-	expect( $response['timing']['tcp'] )->toBeGreaterThan( 0 );
-	expect( $response['timing']['tls'] )->toBe( 0 );
-	expect( $response['timing']['redirect'] )->toBe( 0 );
-	expect( $response['timing']['ttfb'] )->toBeGreaterThan( 0 );
-	expect( $response['timing']['done'] )->toBeGreaterThan( 0 );
+	expect( $response['timing']['curl_namelookup_time_us'] )->toBeGreaterThan( 0 );
+	expect( $response['timing']['curl_connect_time_us'] )->toBeGreaterThan( 0 );
+	expect( $response['timing']['curl_appconnect_time_us'] )->toBe( 0 );
+	expect( $response['timing']['curl_redirect_time_us'] )->toBe( 0 );
+	expect( $response['timing']['curl_pretransfer_time_us'] )->toBeGreaterThan( 0 );
+	expect( $response['timing']['curl_starttransfer_time_us'] )->toBeGreaterThan( 0 );
+	expect( $response['timing']['curl_total_time_us'] )->toBeGreaterThan( 0 );
 } );
 
 test( 'get-php: response timing', function () {
@@ -100,7 +101,7 @@ test( 'get-php: response timing', function () {
 	expect( $response['response_code'] )->toBe( 200 );
 	expect( $response['headers']['content-type'] )->toBe( 'application/json' );
 
-	expect( $response['timing']['done'] )->toBeGreaterThan( 0 );
+	expect( $response['timing']['curl_total_time_us'] )->toBeGreaterThan( 0 );
 } );
 
 test( 'get-php: only php', function () {
