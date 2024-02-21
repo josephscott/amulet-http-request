@@ -20,7 +20,7 @@
 	"config": {
 		"classmap-authoritative": true,
 		"allow-plugins": {
-			"pestphp/pest-plugin": false
+			"pestphp/pest-plugin": true
 		}
 	}
 }
