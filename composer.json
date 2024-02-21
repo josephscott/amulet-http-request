@@ -9,8 +9,8 @@
 	"require-dev": {
 		"ext-json": "*",
 		"phpstan/phpstan": "^1.10",
-		"pestphp/pest": "^2.24",
-		"friendsofphp/php-cs-fixer": "^3.37"
+		"pestphp/pest": "^2.34",
+		"friendsofphp/php-cs-fixer": "^3.49"
 	},
 	"autoload": {
 		"classmap": [

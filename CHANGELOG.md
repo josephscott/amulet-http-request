@@ -2,6 +2,8 @@
 
 ## ????
 - Rework curl timing details, provide direct curl numbers
+- Bump pest to 2.24
+- Bump php-cs-fixer to 3.49
 
 ## 0.0.2 : 2023-12-18
 - Default headers: connection, accept, user-agent
