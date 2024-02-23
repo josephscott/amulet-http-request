@@ -1,6 +1,7 @@
 # Changelog
 
 ## ????
+- Tests now use the Pest "--parallel" option
 - Rework curl timing details, provide direct curl numbers
 - Bump pest to 2.24
 - Bump php-cs-fixer to 3.49

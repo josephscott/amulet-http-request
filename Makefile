@@ -38,7 +38,7 @@ tests: test-server
 	@echo "--> Tests: Pest"
 	@echo
 	# Always stop the web server, even if tests fail
-	bash -c "./vendor/bin/pest || kill -9 `cat tests/server/pid.txt`"
+	bash -c "./vendor/bin/pest --parallel || kill -9 `cat tests/server/pid.txt`"
 	@echo
 	@echo "--> Test Server: stopping"
 	@echo
