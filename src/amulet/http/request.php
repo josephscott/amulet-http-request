@@ -184,10 +184,10 @@ class Request {
 			\CURLOPT_PROTOCOLS => \CURLPROTO_HTTP | \CURLPROTO_HTTPS,
 			\CURLOPT_HTTPHEADER => $headers,
 			\CURLOPT_HEADERFUNCTION => function ( $curl, $header ) use ( &$out ) {
-				$length = strlen( $header );
+				$length = \strlen( $header );
 				$parts = explode( ':', $header, 2 );
 
-				if ( count( $parts ) < 2 ) {
+				if ( \count( $parts ) < 2 ) {
 					if ( preg_match( '/^HTTP\/([0-9\.]+)\s+([0-9]+)/', $header, $matches ) ) {
 						$out['http_version'] = (int) $matches[1];
 						$out['response_code'] = (int) $matches[2];
@@ -280,7 +280,7 @@ class Request {
 
 		if (
 			! empty( $options['encoding'] )
-			&& function_exists( 'gzdecode' )
+			&& \function_exists( 'gzdecode' )
 		) {
 			$headers['Accept-Encoding'] = 'gzip';
 		}
@@ -371,12 +371,12 @@ class Request {
 
 		$response_code = array_shift( $headers );
 		if ( preg_match( '#HTTP/[0-9\.]+\s+([0-9]+)#', $response_code, $matches ) ) {
-			$headers[] = 'response_code: ' . intval( $matches[1] );
+			$headers[] = 'response_code: ' . \intval( $matches[1] );
 		}
 
 		foreach ( $headers as $header ) {
 			$parts = explode( ':', $header, 2 );
-			if ( count( $parts ) === 2 ) {
+			if ( \count( $parts ) === 2 ) {
 				$parts[1] = trim( $parts[1] );
 				if ( is_numeric( $parts[1] ) ) {
 					$parts[1] = (int) $parts[1];
