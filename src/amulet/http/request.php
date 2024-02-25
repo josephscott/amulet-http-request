@@ -308,8 +308,11 @@ class Request {
 			$response->body = gzdecode( $body );
 		}
 
+		$response->http_version = $response->headers['http_version'];
+		unset( $response->headers['http_version'] );
+
 		$response->code = $response->headers['response_code'];
-		unset( $response->headers['code'] );
+		unset( $response->headers['response_code'] );
 
 		if (
 			$response->code < 200
@@ -356,8 +359,9 @@ class Request {
 		$parsed = [];
 
 		$response_code = array_shift( $headers );
-		if ( preg_match( '#HTTP/[0-9\.]+\s+([0-9]+)#', $response_code, $matches ) ) {
-			$headers[] = 'response_code: ' . \intval( $matches[1] );
+		if ( preg_match( '#HTTP/([0-9\.]+)\s+([0-9]+)#', $response_code, $matches ) ) {
+			$headers[] = 'http_version: ' . \floatval( $matches[1] );
+			$headers[] = 'response_code: ' . \intval( $matches[2] );
 		}
 
 		foreach ( $headers as $header ) {
