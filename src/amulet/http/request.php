@@ -21,7 +21,7 @@ class Request {
 		string $url,
 		array $headers = [],
 		array $options = []
-	) : array {
+	) : Response {
 		$out = $this->request(
 			method: 'DELETE',
 			url: $url,
@@ -35,7 +35,7 @@ class Request {
 		string $url,
 		array $headers = [],
 		array $options = []
-	) : array {
+	) : Response {
 		$out = $this->request(
 			method: 'GET',
 			url: $url,
@@ -49,7 +49,7 @@ class Request {
 		string $url,
 		array $headers = [],
 		array $options = []
-	) : array {
+	) : Response {
 		$out = $this->request(
 			method: 'HEAD',
 			url: $url,
@@ -63,7 +63,7 @@ class Request {
 		string $url,
 		array $headers = [],
 		array $options = []
-	) : array {
+	) : Response {
 		$out = $this->request(
 			method: 'OPTIONS',
 			url: $url,
@@ -78,7 +78,7 @@ class Request {
 		array $headers = [],
 		array $data = [],
 		array $options = []
-	) : array {
+	) : Response {
 		$out = $this->request(
 			method: 'PATCH',
 			url: $url,
@@ -94,7 +94,7 @@ class Request {
 		array $headers = [],
 		array $data = [],
 		array $options = []
-	) : array {
+	) : Response {
 		$out = $this->request(
 			method: 'POST',
 			url: $url,
@@ -110,7 +110,7 @@ class Request {
 		array $headers = [],
 		array $data = [],
 		array $options = []
-	) : array {
+	) : Response {
 		$out = $this->request(
 			method: 'PUT',
 			url: $url,
@@ -127,8 +127,8 @@ class Request {
 		array $headers = [],
 		array $data = [],
 		array $options = []
-	) : array {
-		$out = [];
+	) : Response {
+		$out = null;
 
 		$merged_options = array_merge( $this->default_options, $options );
 
@@ -159,21 +159,14 @@ class Request {
 		array $headers = [],
 		array $data = [],
 		array $options = []
-	) : array {
-		$out = [
-			'error' => false,
-			'response_code' => 0,
-			'http_version' => 0,
-			'headers' => [],
-			'body' => '',
-			'timing' => [],
-		];
-		$time = [];
+	) : Response {
+		$response = new Response();
+		$response->using = 'curl';
 
 		$curl = curl_init( $url );
 		if ( $curl === false ) {
-			$out['error'] = true;
-			return $out;
+			$response->error = true;
+			return $response;
 		}
 
 		curl_setopt_array( $curl, [
@@ -183,14 +176,14 @@ class Request {
 			\CURLOPT_TIMEOUT => $options['timeout'],
 			\CURLOPT_PROTOCOLS => \CURLPROTO_HTTP | \CURLPROTO_HTTPS,
 			\CURLOPT_HTTPHEADER => $headers,
-			\CURLOPT_HEADERFUNCTION => function ( $curl, $header ) use ( &$out ) {
+			\CURLOPT_HEADERFUNCTION => function ( $curl, $header ) use ( &$response ) {
 				$length = \strlen( $header );
 				$parts = explode( ':', $header, 2 );
 
 				if ( \count( $parts ) < 2 ) {
 					if ( preg_match( '/^HTTP\/([0-9\.]+)\s+([0-9]+)/', $header, $matches ) ) {
-						$out['http_version'] = (int) $matches[1];
-						$out['response_code'] = (int) $matches[2];
+						$response->http_version = (int) $matches[1];
+						$response->code = (int) $matches[2];
 						return $length;
 					} else {
 						// Invalid header
@@ -205,7 +198,7 @@ class Request {
 				}
 
 				// May need to reconsider this for duplicate headers
-				$out['headers'][$key] = $value;
+				$response->headers[$key] = $value;
 				return $length;
 			},
 		] );
@@ -237,16 +230,16 @@ class Request {
 		curl_setopt( $curl, CURLOPT_HTTPHEADER, $curl_headers );
 
 		$start = microtime( true );
-		$response = curl_exec( $curl );
-		$time['done'] = number_format(
+		$body = curl_exec( $curl );
+		$response->timing['done'] = number_format(
 			( microtime( true ) - $start ),
 			6
 		);
 
-		if ( $response === false ) {
-			$out['error'] = true;
+		if ( $body === false ) {
+			$response->error = true;
 		} else {
-			$out['body'] = $response;
+			$response->body = $body;
 		}
 
 		$info = curl_getinfo( $curl );
@@ -254,12 +247,11 @@ class Request {
 
 		foreach ( $info as $k => $v ) {
 			if ( strpos( $k, '_time_us' ) !== false ) {
-				$time['curl_' . $k] = $v;
+				$response->timing['curl_' . $k] = $v;
 			}
 		}
 
-		$out['timing'] = $time;
-		return $out;
+		return $response;
 	}
 
 	public function request_php(
@@ -268,15 +260,9 @@ class Request {
 		array $headers = [],
 		array $data = [],
 		array $options = []
-	) : array {
-		$out = [
-			'error' => false,
-			'response_code' => 0,
-			'http_version' => 0,
-			'headers' => [],
-			'body' => '',
-			'timing' => [],
-		];
+	) : Response {
+		$response = new Response();
+		$response->using = 'php';
 
 		if (
 			! empty( $options['encoding'] )
@@ -301,39 +287,39 @@ class Request {
 			use_include_path: false,
 			context: $context
 		);
-		$out['done'] = number_format(
+		$response->timing['done'] = number_format(
 			( microtime( true ) - $start ),
 			6
 		);
 		if ( $body === false ) {
-			$out['error'] = true;
-			return $out;
+			$response->error = true;
+			return $response;
 		}
 
-		$out['body'] = $body;
-		$out['headers'] = self::php_parse_headers(
+		$response->body = $body;
+		$response->headers = self::php_parse_headers(
 			headers: $http_response_header
 		);
 
 		if (
-			isset( $out['headers']['content-encoding'] )
-			&& $out['headers']['content-encoding'] === 'gzip'
+			isset( $response->headers['content-encoding'] )
+			&& $response->headers['content-encoding'] === 'gzip'
 		) {
-			$out['body'] = gzdecode( $body );
+			$response->body = gzdecode( $body );
 		}
 
-		$out['response_code'] = $out['headers']['response_code'];
-		unset( $out['headers']['response_code'] );
+		$response->code = $response->headers['response_code'];
+		unset( $response->headers['code'] );
 
 		if (
-			$out['response_code'] < 200
-			|| $out['response_code'] > 299
+			$response->code < 200
+			|| $response->code > 299
 		) {
-			$out['error'] = true;
-			return $out;
+			$response->error = true;
+			return $response;
 		}
 
-		return $out;
+		return $response;
 	}
 
 	private function php_build_context(
@@ -366,7 +352,7 @@ class Request {
 		return $context;
 	}
 
-	private function php_parse_headers( array $headers ):array {
+	private function php_parse_headers( array $headers ) : array {
 		$parsed = [];
 
 		$response_code = array_shift( $headers );

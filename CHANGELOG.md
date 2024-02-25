@@ -1,6 +1,7 @@
 # Changelog
 
 ## ????
+- New Response object to requests
 - Tests now use the Pest "--parallel" option
 - Rework curl timing details, provide direct curl numbers
 - Fully qualify PHP functions

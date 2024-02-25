@@ -11,11 +11,11 @@ test( 'post-curl: data', function () {
 		]
 	);
 
-	$data = json_decode( $response['body'], associative: true );
+	$data = json_decode( $response->body, associative: true );
 
-	expect( $response['error'] )->toBe( false );
-	expect( $response['response_code'] )->toBe( 200 );
-	expect( $response['headers']['content-type'] )->toBe( 'application/json' );
+	expect( $response->error )->toBe( false );
+	expect( $response->code )->toBe( 200 );
+	expect( $response->headers['content-type'] )->toBe( 'application/json' );
 	expect( $data['post']['hello'] )->toBe( 'world' );
 } );
 
@@ -30,10 +30,10 @@ test( 'post-php: data', function () {
 		]
 	);
 
-	$data = json_decode( $response['body'], associative: true );
+	$data = json_decode( $response->body, associative: true );
 
-	expect( $response['error'] )->toBe( false );
-	expect( $response['response_code'] )->toBe( 200 );
-	expect( $response['headers']['content-type'] )->toBe( 'application/json' );
+	expect( $response->error )->toBe( false );
+	expect( $response->code )->toBe( 200 );
+	expect( $response->headers['content-type'] )->toBe( 'application/json' );
 	expect( $data['post']['hello'] )->toBe( 'world' );
 } );

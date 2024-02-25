@@ -14,7 +14,8 @@
 	},
 	"autoload": {
 		"classmap": [
-			"src/amulet/http/request.php"
+			"src/amulet/http/request.php",
+			"src/amulet/http/response.php"
 		]
 	},
 	"config": {
