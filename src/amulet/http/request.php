@@ -231,9 +231,8 @@ class Request {
 
 		$start = microtime( true );
 		$body = curl_exec( $curl );
-		$response->timing['done'] = number_format(
-			( microtime( true ) - $start ),
-			6
+		$response->timing['done'] = \intval(
+			( microtime( true ) - $start ) * 1000000
 		);
 
 		if ( $body === false ) {
@@ -287,9 +286,8 @@ class Request {
 			use_include_path: false,
 			context: $context
 		);
-		$response->timing['done'] = number_format(
-			( microtime( true ) - $start ),
-			6
+		$response->timing['done'] = \intval(
+			( microtime( true ) - $start ) * 1000000
 		);
 		if ( $body === false ) {
 			$response->error = true;

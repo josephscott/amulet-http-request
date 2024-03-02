@@ -2,6 +2,7 @@
 
 ## ????
 - New Response object to requests
+- Done time value is an integer of microseconds 
 - Tests now use the Pest "--parallel" option
 - Rework curl timing details, provide direct curl numbers
 - Fully qualify PHP functions
